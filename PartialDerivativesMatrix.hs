@@ -17,9 +17,11 @@ instance Num a => Num (DM a) where
     negate (fm, m)     = (negate fm, fmap negate m)
     fromInteger x      = error ("No definition of fromInteger for partial derivatives: "++(show x))
 
+-- A constant function f(A) = c
 cons :: (Num a) => Int -> Int -> a -> Matrix a -> DM a
 cons i j a = const (a, matrix i j (const 0))
 
+-- The function f(A) = A_xy
 idm :: (Num a) => Int -> Int -> (Int, Int) -> Matrix a -> DM a
 idm i j xy a = (a!xy, matrix i j (\ij -> if ij == xy then 1 else 0)) 
 
