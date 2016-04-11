@@ -6,14 +6,16 @@ import Prelude hiding ((!))
 import Data.Matrix
 import FunctionInstances
 
+-- Represents the results and derivatives of f :: Matrix a -> a
 type DM a = (a, Matrix a)
 
+-- Get the result of the computation and all the partial derivatives at the same time
 instance Num a => Num (DM a) where
     (fm, m) + (gm, m') = (fm+gm, matrix (nrows m) (ncols m) (\ij -> (m!ij) + (m'!ij)))
     (fm, m) * (gm, m') = (fm*gm, matrix (nrows m) (ncols m) (\ij -> fm*(m'!ij) + gm*(m!ij)))
     (fm, m) - (gm, m') = (fm-gm, matrix (nrows m) (ncols m) (\ij -> (m!ij) - (m'!ij)))
-    abs                = undefined
-    signum             = undefined
+    abs                = error ("No definition of abs for partial derivatives")
+    signum             = error ("No definition of signum for partial derivatives")
     negate (fm, m)     = (negate fm, fmap negate m)
     fromInteger x      = error ("No definition of fromInteger for partial derivatives: "++(show x))
 
