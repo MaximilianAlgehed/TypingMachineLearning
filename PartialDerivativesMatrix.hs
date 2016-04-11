@@ -20,8 +20,9 @@ cons i j a _ = (a, matrix i j (const 0))
 idm :: (Num a) => Int -> Int -> (Int, Int) -> Matrix a -> DM a
 idm i j xy a = (a!xy, matrix i j (\ij -> if ij == xy then 1 else 0)) 
 
-apply :: DM (Matrix Double -> Double) -> Matrix Double -> DM Double
-apply (f, ds) a = (f a, fmap (\g -> g a) ds)
-
 test1 :: Matrix Double -> DM Double
-test1 = (idm 1 2 (1, 1)) + ((cons 1 2 2)*((idm 1 2 (1, 2))*(idm 1 2 (1, 2))))
+test1 = x*(x + two*y*y)
+    where
+        x   = idm 1 2 (1, 1)
+        y   = idm 1 2 (1, 2)
+        two = cons 1 2 2
