@@ -19,6 +19,18 @@ instance Num a => Num (DM a) where
     negate (fm, m)     = (negate fm, fmap negate m)
     fromInteger x      = error ("No definition of fromInteger for partial derivatives: "++(show x))
 
+-- Get the result fo the computation and all the partial derivatives at the same time
+instance Fractional a => Fractional (DM a) where
+    (fm, m) / (gm, m') = (fm/gm, matrix (nrows m) (ncols m) (\ij -> (gm*(m!ij) - fm*(m'!ij)) / (gm*gm)))
+    fromRational x     = error ("No definition of fromRational for partial derivatives: "++(show x)) 
+
+-- Get the result fo the computation and all the partial derivatives at the same time
+instance Floating a => Floating (DM a) where
+    pi           = undefined
+    exp  (fm, m) = (exp fm, fmap (*(exp fm)) m) 
+    sqrt (fm, m) = (sqrt fm, fmap (/(2*sqrt fm)) m)   
+    log  (fm, m) = (log fm, fmap (/fm) m)     
+
 -- A constant function f(A) = c
 cons :: (Num a) => Int -> Int -> a -> Matrix a -> DM a
 cons i j a = const (a, matrix i j (const 0))
@@ -33,3 +45,13 @@ test1 = x*(x + two*y*y)
         x   = idm 1 2 (1, 1)
         y   = idm 1 2 (1, 2)
         two = cons 1 2 2
+
+test2 :: Matrix Double -> DM Double
+test2 = x*(exp y)
+    where
+        x   = idm 1 2 (1, 1)
+        y   = idm 1 2 (1, 2)
+
+-- The del operator
+del :: (Num a) => (Matrix a -> DM a) -> Matrix a -> Matrix a
+del f a = snd (f a)
