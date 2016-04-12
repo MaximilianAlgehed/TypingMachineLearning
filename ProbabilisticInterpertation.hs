@@ -18,13 +18,10 @@ type Hypothesis a = Data a -> Parameters a -> DM a
 type TrainingData a = Data a
 
 -- Training results
-type TrainingResults a = Matrix a
+type TrainingResults a = Results a
 
 -- A training set
 type TrainingSet a = (TrainingData a, TrainingResults a)
-
--- The cost function, J
-type CostFunction a = Hypothesis a -> TrainingSet a -> Parameters a -> DM a
 
 -- A distribution is just p(y | x; theta)
 type Distribution a = a -> Data a -> Parameters a -> DM a
@@ -40,6 +37,19 @@ gaussian sigma y x = value
         diff  = (cons 1 n y) - foldl1 (+) [(idm 1 n (1, i))*(cons 1 n (x'!(1, i))) | i <- [1..n]]
         n     = ncols x'
         x'    = matrix 1 1 (const 1) <|> x
+
+-- Bernoulli distribution
+bernoulli :: (Eq a, Floating a) => Distribution a
+bernoulli y x = if y == 0 then
+                    one - v
+                else
+                    v
+                    where
+                        v     = one/(one+exp (-value))
+                        one   = cons 1 n 1
+                        value = foldl1 (+) [(idm 1 n (1, i))*(cons 1 n (x'!(1,i))) | i <- [1..n]]
+                        n     = ncols x'
+                        x'    = matrix 1 1 (const 1) <|> x
 
 -- The likelihood function L
 likelihood :: (Floating a) => Distribution a -> TrainingSet a -> Parameters a -> DM a
