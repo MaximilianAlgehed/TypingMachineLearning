@@ -31,6 +31,15 @@ linearHypothesis xs = value
         n     = ncols xs'
         xs'   = matrix 1 1 (const 1) <|> xs
 
+-- A logistic hypothesis, h(x, theta) = 1/(1+exp - theta^t*[1 x])
+logisticHypothesis :: (Floating a) => Hypothesis a
+logisticHypothesis xs = one/(one+exp (-value))
+    where
+        one   = cons 1 n 1
+        value = foldl1 (+) [(idm 1 n (1, i)) * (cons 1 n (xs'!(1, i))) | i <- [1..n]]
+        n     = ncols xs'
+        xs'   = matrix 1 1 (const 1) <|> xs
+
 -- Square error cost function
 squareError :: (Floating a) => CostFunction a
 squareError h (d, r) = value

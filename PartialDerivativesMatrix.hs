@@ -39,6 +39,7 @@ cons i j a = const (a, matrix i j (const 0))
 idm :: (Num a) => Int -> Int -> (Int, Int) -> Matrix a -> DM a
 idm i j xy a = (a!xy, matrix i j (\ij -> if ij == xy then 1 else 0)) 
 
+-- The normal num stuff
 test1 :: Matrix Double -> DM Double
 test1 = x*(x + two*y*y)
     where
@@ -46,8 +47,16 @@ test1 = x*(x + two*y*y)
         y   = idm 1 2 (1, 2)
         two = cons 1 2 2
 
+-- Test some floating stuff
 test2 :: Matrix Double -> DM Double
 test2 = x*(exp y)
+    where
+        x   = idm 1 2 (1, 1)
+        y   = idm 1 2 (1, 2)
+
+-- Test (/)
+test3 :: Matrix Double -> DM Double
+test3 = x/y
     where
         x   = idm 1 2 (1, 1)
         y   = idm 1 2 (1, 2)
